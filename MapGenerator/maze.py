@@ -1,7 +1,8 @@
 import numpy as np
-import cell
+from cell import Cell
 import random
 import copy
+
 
 class Maze:
     def __init__(self, rows, cols, start_pos=(0, 0)) -> None:
@@ -15,7 +16,7 @@ class Maze:
         for i in range(self.rows):
             col = []
             for j in range(self.cols):
-                cell_obj = cell.Cell(row_id=i, col_id=j)
+                cell_obj = Cell(row_id=i, col_id=j)
                 if self.start_pos == (i, j): 
                     cell_obj.start = True
                 col.append(cell_obj)
@@ -26,27 +27,28 @@ class Maze:
 
         for counter, i in enumerate(self.maze):
             for j_counter, j in enumerate(i):
-                if j.has_openings():
-                    img_array[counter][j_counter] = 1
-                if j.start:
-                    img_array[counter][j_counter] = 2
+                #if j.has_openings():
+                    #img_array[counter][j_counter] = 1
+                #if j.start:
+                    #img_array[counter][j_counter] = 2
+                if j.index:
+                    img_array[counter][j_counter] = j.index
             print(img_array[counter].tolist())
 
         return img_array
 
-    def get_neighbours(self, cell: cell.Cell, visited=False) -> list:  
+    def get_neighbours(self, cell: Cell, visited=False) -> list:  
         neighbours = []
         test_cell = None
         for i in range(4):
-            match i:
-                case 0: test_cell = [cell.row_id, cell.col_id+1] # op
-                case 1: test_cell = [cell.row_id+1, cell.col_id] # høre
-                case 2: 
-                    if cell.row_id > 0:
-                        test_cell = [cell.row_id-1, cell.col_id] # venstre
-                case 3: 
-                    if cell.col_id > 0:
-                        test_cell = [cell.row_id, cell.col_id-1] # ned
+            if i == 0: test_cell = [cell.row_id, cell.col_id+1] # op
+            elif i == 1: test_cell = [cell.row_id+1, cell.col_id] # høre
+            elif i == 2:
+                if cell.row_id > 0:
+                    test_cell = [cell.row_id-1, cell.col_id] # venstre
+            elif i == 3:
+                if cell.col_id > 0:
+                    test_cell = [cell.row_id, cell.col_id-1] # ned
 
             try:
                 if visited:
@@ -66,11 +68,12 @@ def generate_track(arr: Maze) -> None:
     visited_cells = []
     track_length = 0
     goal_cells = maze.get_neighbours(start_cell)
-    start_cell.knock_down_wall(maze.maze[start_cell.row_id][start_cell.col_id+1])
-    current_cell = maze.maze[start_cell.row_id][start_cell.col_id+1]
+    start_cell.knock_down_wall(maze.maze[start_cell.row_id][start_cell.col_id-1])
+    start_cell.index = 0
+    current_cell = maze.maze[start_cell.row_id][start_cell.col_id-1]
     while True:
         if current_cell == start_cell:
-            if track_length < 80: return generate_track(arr)
+            if track_length < 30: return generate_track(arr)
             return maze
         possible_neighbours = maze.get_neighbours(current_cell, visited=True)
         if not possible_neighbours:
@@ -78,14 +81,15 @@ def generate_track(arr: Maze) -> None:
         #Chose cell to go to.
         neighbour_cell = random.choice(possible_neighbours)
         current_cell.knock_down_wall(neighbour_cell)
+        current_cell.index = track_length+1
         track_length += 1
         current_cell = neighbour_cell
 
-
-maze = Maze(16, 9, start_pos=(0, 2))
-maze.generate_maze()
-test = generate_track(arr=maze)
-pm = test.print_maze()
+if __name__ == '__main__':
+    maze = Maze(16, 9, start_pos=(0, 2))
+    maze.generate_maze()
+    test = generate_track(arr=maze)
+    pm = test.print_maze()
 
 
 # cell = maze.maze[3][4]

@@ -8,6 +8,7 @@ class Cell:
         self.visited = False #Has the cell been "visited" by the map generating algorithm?
         self.total_row = total_row
         self.total_col = total_col
+        self.index = None
 
     def knock_down_wall(self, neighbour: "Cell") -> None:
         wall_between = self.get_wall_between(neighbour)
