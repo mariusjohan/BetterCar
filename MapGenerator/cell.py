@@ -29,16 +29,15 @@ class Cell:
 
     def get_wall_between(self, neighbour: "Cell") -> list:
         "Returns the direction of the wall, first for the current cell, and afterwards for the neighbour"
-        if self.row_id == neighbour.row_id: #The wall must be above or below current cell
-            if self.col_id - neighbour.col_id == -1: #The wall is above the current cell
+        if self.row_id == neighbour.row_id: #The wall must be above or below
+            if self.col_id - neighbour.col_id == 1: #the wall is above
                 return ['top', 'down']
-            elif self.col_id - neighbour.col_id == 1: #The wall is below the current cell
+            elif self.col_id - neighbour.col_id == -1: #The wall is below
                 return ['down', 'top']
-            print('2')
-        if self.col_id == neighbour.col_id:
-            if self.row_id - neighbour.row_id == -1: #The wall is to the right of current cell
+        if self.col_id == neighbour.col_id: #The is to the side of the cell
+            if self.row_id - neighbour.row_id == -1: #RIGHT
                 return ['right', 'left']
-            elif self.row_id - neighbour.row_id == 1: #The wall is to the left of current cell
+            elif self.row_id - neighbour.row_id == 1: #LEFT
                 return ['left', 'right']
             print('3')
 

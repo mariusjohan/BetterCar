@@ -61,7 +61,7 @@ class Maze:
 
         return neighbours
 
-def generate_track(arr: Maze) -> None:
+def generate_track(arr: Maze, min_len=30) -> None:
     "The track is generated with the first visited cell being one above the start cell!!!"
     maze = copy.deepcopy(arr)
     start_cell = maze.maze[maze.start_pos[0]][maze.start_pos[1]]
@@ -69,11 +69,14 @@ def generate_track(arr: Maze) -> None:
     track_length = 0
     goal_cells = maze.get_neighbours(start_cell)
     start_cell.knock_down_wall(maze.maze[start_cell.row_id][start_cell.col_id-1])
-    start_cell.index = 0
+    start_cell.index = 1
     current_cell = maze.maze[start_cell.row_id][start_cell.col_id-1]
+    visited_cells.append(start_cell)
+    visited_cells.append(current_cell)
     while True:
         if current_cell == start_cell:
-            if track_length < 30: return generate_track(arr)
+            if track_length < min_len: return generate_track(arr)
+            [print("VVVVV", cell.walls) for cell in visited_cells]
             return maze
         possible_neighbours = maze.get_neighbours(current_cell, visited=True)
         if not possible_neighbours:
@@ -81,9 +84,11 @@ def generate_track(arr: Maze) -> None:
         #Chose cell to go to.
         neighbour_cell = random.choice(possible_neighbours)
         current_cell.knock_down_wall(neighbour_cell)
-        current_cell.index = track_length+1
+        current_cell.index = track_length+2
+        visited_cells.append(current_cell)
         track_length += 1
         current_cell = neighbour_cell
+    
 
 if __name__ == '__main__':
     maze = Maze(16, 9, start_pos=(0, 2))

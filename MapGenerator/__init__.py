@@ -7,16 +7,19 @@ WIDTH = 16
 HEIGHT = 9
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
-BLOCKSIZE = SCREEN_WIDTH/WIDTH # 120
+BLOCKSIZE = 146 # 120
 
 pyg.init()
 SCREEN = pyg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-vertical      = pyg.image.load("track_imgs/vertical.png")
-horizontal    = pyg.image.load("track_imgs/horizontal.png")
-right_to_down = pyg.image.load("track_imgs/r2d.png")
-down_to_left  = pyg.image.load("track_imgs/d2l.png")
-left_to_top   = pyg.image.load("track_imgs/l2t.png")
-top_to_right  = pyg.image.load("track_imgs/t2r.png")
+vertical      = pyg.image.load("MapGenerator/track_imgs/vertical.png")
+horizontal    = pyg.image.load("MapGenerator/track_imgs/horizontal.png")
+right_to_down = pyg.image.load("MapGenerator/track_imgs/r2d.png")
+down_to_left  = pyg.image.load("MapGenerator/track_imgs/d2l.png")
+left_to_top   = pyg.image.load("MapGenerator/track_imgs/l2t.png")
+top_to_right  = pyg.image.load("MapGenerator/track_imgs/t2r.png")
+
+movex = 70
+movey = 85
 
 def generate_image(maze: Maze):
     for cell_row in maze:
@@ -26,26 +29,26 @@ def generate_image(maze: Maze):
                 continue
             cell_coordinates = get_coordinates(cell)
             cell_img_rect = cell_img.get_rect()
-            SCREEN.blit(cell_img, cell_img_rect.move(*cell_coordinates))
+            SCREEN.blit(cell_img, cell_img_rect.move(cell_coordinates[0]+movex, cell_coordinates[1]+movey))
 
 def get_img(cell: Cell):
     openings = cell.get_opening()
     print(f"WALLS: {cell.walls}")
-    print(f"openings: {openings}")
-    if ('down' and 'up') in openings:
+    print(f"openings: {openings} {openings.__len__()}")
+    if 'down' in openings and 'top' in openings:
         return vertical
-    elif ('left' and 'right') in openings: 
+    elif 'left' in openings and 'right' in openings: 
         return horizontal
-    elif ('right' and 'down') in openings:
+    elif 'right' in openings and 'down' in openings:
         return right_to_down
-    elif ('down' and 'left') in openings:
+    elif 'down' in openings and 'left' in openings:
         return down_to_left
-    elif ('left' and 'top') in openings:
+    elif 'left' in openings and 'top' in openings:
         return left_to_top
-    elif ('top' and 'right') in openings:
+    elif 'top' in openings and 'right' in openings:
         return top_to_right
-    else:
-        return 'skip'
+    elif openings.__len__() == 0:
+        return "skip"
 
 def get_coordinates(cell: Cell) -> tuple: 
     row_id, col_id = cell.row_id, cell.col_id
@@ -53,10 +56,10 @@ def get_coordinates(cell: Cell) -> tuple:
 
 
 if __name__ == "__main__":
-    grids = Maze(rows=16, cols=9, start_pos=(0, 2))
+    grids = Maze(rows=12, cols=6, start_pos=(0, 2))
     grids.generate_maze()
-    track = generate_track(arr = grids)
+    track = generate_track(arr = grids, min_len=10)
     generate_image(track.maze)
-    #SCREEN.blit(right_to_down, (0, 0))
-    pyg.image.save(SCREEN, "tracks/test.png")
+    pyg.image.save(SCREEN, "tracks/test2.png")
     track.print_maze()
+    print(track.maze[0][2].walls)
