@@ -1,5 +1,6 @@
 import sys
 sys.path.append('./MapGenerator')
+sys.setrecursionlimit(10**6)
 
 import pygame as pyg
 
@@ -56,6 +57,8 @@ def get_coordinates(cell: Cell) -> tuple:
 
 
 def main(fileName=None, rows=13, cols=7, start_pos=(0, 2), track_length=40, SCREEN_WIDTH=1920, SCREEN_HEIGHT=1080, BLOCKSIZE=146):
+    if track_length > 70:
+        raise ValueError("Track Length is too long!")
     pyg.init()
 
     SCREEN = pyg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -63,6 +66,7 @@ def main(fileName=None, rows=13, cols=7, start_pos=(0, 2), track_length=40, SCRE
     grids = Maze(rows=rows, cols=cols, start_pos=start_pos)
     grids.generate_maze()
     track = generate_track(arr=grids, min_len=track_length)
+    print(track.seed)
     generate_image(track.maze, SCREEN)
     if fileName:
         pyg.image.save(SCREEN, fileName)

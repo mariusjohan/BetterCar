@@ -43,9 +43,6 @@ class Cell:
                 return ['right', 'left']
             elif self.row_id - neighbour.row_id == 1:  # LEFT
                 return ['left', 'right']
-            print('3')
-
-        print('1')
 
     def has_openings(self) -> bool:
         return not (self.walls['top'] and self.walls['right'] and self.walls['down'] and self.walls['left'])

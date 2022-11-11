@@ -13,6 +13,8 @@ class Maze:
             self.start_pos = start_pos
         self.maze = []
 
+        self.seed = ""
+
     def generate_maze(self) -> None:
         """ Generates a matrix with cells, but there's no "path" for the car """
         for i in range(self.rows):
@@ -72,18 +74,21 @@ def generate_track(arr: Maze, min_len=30) -> None:
     maze = copy.deepcopy(arr)
     visited_cells = []
     track_length = 0
-
+    test_dict = {"right": '1', "left": '3', 'top': '4', 'down': '2'}
     # Get the start cell
     start_cell = maze.maze[maze.start_pos[0]][maze.start_pos[1]]
     start_cell.index = 1
     start_cell.knock_down_wall(
         maze.maze[start_cell.row_id][start_cell.col_id-1])
+    maze.seed += f"{start_cell.row_id}-{start_cell.col_id}-"
+    maze.seed += f"{test_dict['top']}"
 
     current_cell = maze.maze[start_cell.row_id][start_cell.col_id-1]
     visited_cells.append(start_cell)
     visited_cells.append(current_cell)
 
     while True:
+        
         if current_cell == start_cell:  # Are we back at the start?
             if track_length < min_len:
                 return generate_track(arr, min_len)
@@ -96,9 +101,10 @@ def generate_track(arr: Maze, min_len=30) -> None:
         # Chose cell to go to.
         neighbour_cell = random.choice(possible_neighbours)
         track_length += 1
-
         # Knock down neighbour wall
         current_cell.knock_down_wall(neighbour_cell)
+        wall_to_add = current_cell.get_wall_between(neighbour_cell)
+        maze.seed += f"{test_dict[wall_to_add[0]]}"
         current_cell.index = track_length+1
         visited_cells.append(current_cell)
 

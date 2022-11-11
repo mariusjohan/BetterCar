@@ -10,7 +10,7 @@ screen = None
 
 pyg.init()
 
-screen = MapGenerator.main('tracks/test2.png')
+screen = MapGenerator.main(track_length=30)
 
 
 if __name__ == "__main__":
