@@ -1,21 +1,17 @@
 import pygame as pyg
 import os
 import random
+import MapGenerator
+
 
 # Settings for the program
 fps = 60
+screen = None
 
 pyg.init()
 
-def load():
-    global screen, track
-    display_size = [1920, 1080]
+screen = MapGenerator.main('tracks/test2.png')
 
-    screen = pyg.display.set_mode(display_size, flags=pyg.SCALED, vsync=1)
-    
-    # Load og skaler billedet 'track1.png' til skærmens størrelse
-    track = pyg.image.load(os.path.join('tracks', 'track1.png')).convert_alpha()
-    track = pyg.transform.scale(track, display_size)    
 
 if __name__ == "__main__":
     running = True
@@ -25,7 +21,7 @@ if __name__ == "__main__":
 
         # Event listener...
         for event in pyg.event.get():
-            if event.type == pyg.QUIT: # User closed the window
-                running = False # Stop the loop
+            if event.type == pyg.QUIT:  # User closed the window
+                running = False  # Stop the loop
 
-        pyg.display.update() #update entire screen
+        pyg.display.update()  # update entire screen

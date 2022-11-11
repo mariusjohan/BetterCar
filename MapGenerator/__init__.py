@@ -1,43 +1,41 @@
+import sys
+sys.path.append('./MapGenerator')
+
 import pygame as pyg
+
 from cell import Cell
 from maze import Maze, generate_track
 
-SCALE = 1
-WIDTH = 16
-HEIGHT = 9
-SCREEN_WIDTH = 1920
-SCREEN_HEIGHT = 1080
-BLOCKSIZE = 146 # 120
 
-pyg.init()
-SCREEN = pyg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-vertical      = pyg.image.load("MapGenerator/track_imgs/vertical.png")
-horizontal    = pyg.image.load("MapGenerator/track_imgs/horizontal.png")
+BLOCKSIZE = 146
+vertical = pyg.image.load("MapGenerator/track_imgs/vertical.png")
+horizontal = pyg.image.load("MapGenerator/track_imgs/horizontal.png")
 right_to_down = pyg.image.load("MapGenerator/track_imgs/r2d.png")
-down_to_left  = pyg.image.load("MapGenerator/track_imgs/d2l.png")
-left_to_top   = pyg.image.load("MapGenerator/track_imgs/l2t.png")
-top_to_right  = pyg.image.load("MapGenerator/track_imgs/t2r.png")
+down_to_left = pyg.image.load("MapGenerator/track_imgs/d2l.png")
+left_to_top = pyg.image.load("MapGenerator/track_imgs/l2t.png")
+top_to_right = pyg.image.load("MapGenerator/track_imgs/t2r.png")
 
-movex = 70
-movey = 85
+movex = 10  # 70
+movey = 15  # 85
 
-def generate_image(maze: Maze):
+
+def generate_image(maze: Maze, screen):
     for cell_row in maze:
-        for cell in cell_row: 
+        for cell in cell_row:
             cell_img = get_img(cell)
             if cell_img == 'skip':
                 continue
             cell_coordinates = get_coordinates(cell)
             cell_img_rect = cell_img.get_rect()
-            SCREEN.blit(cell_img, cell_img_rect.move(cell_coordinates[0]+movex, cell_coordinates[1]+movey))
+            screen.blit(cell_img, cell_img_rect.move(
+                cell_coordinates[0]+movex, cell_coordinates[1]+movey))
+
 
 def get_img(cell: Cell):
     openings = cell.get_opening()
-    print(f"WALLS: {cell.walls}")
-    print(f"openings: {openings} {openings.__len__()}")
     if 'down' in openings and 'top' in openings:
         return vertical
-    elif 'left' in openings and 'right' in openings: 
+    elif 'left' in openings and 'right' in openings:
         return horizontal
     elif 'right' in openings and 'down' in openings:
         return right_to_down
@@ -50,16 +48,24 @@ def get_img(cell: Cell):
     elif openings.__len__() == 0:
         return "skip"
 
-def get_coordinates(cell: Cell) -> tuple: 
+
+
+def get_coordinates(cell: Cell) -> tuple:
     row_id, col_id = cell.row_id, cell.col_id
     return (row_id*BLOCKSIZE, col_id*BLOCKSIZE)
 
 
-if __name__ == "__main__":
-    grids = Maze(rows=12, cols=6, start_pos=(0, 2))
+def main(fileName=None, rows=13, cols=7, start_pos=(0, 2), track_length=40, SCREEN_WIDTH=1920, SCREEN_HEIGHT=1080, BLOCKSIZE=146):
+    pyg.init()
+
+    SCREEN = pyg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    grids = Maze(rows=rows, cols=cols, start_pos=start_pos)
     grids.generate_maze()
-    track = generate_track(arr = grids, min_len=10)
-    generate_image(track.maze)
-    pyg.image.save(SCREEN, "tracks/test2.png")
+    track = generate_track(arr=grids, min_len=track_length)
+    generate_image(track.maze, SCREEN)
+    if fileName:
+        pyg.image.save(SCREEN, fileName)
     track.print_maze()
-    print(track.maze[0][2].walls)
+
+    return SCREEN
