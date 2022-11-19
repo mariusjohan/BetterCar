@@ -1,17 +1,12 @@
 import pygame as pyg
 import os
 import random
-import MapGenerator
-
 
 # Settings for the program
 fps = 60
 screen = None
 
 pyg.init()
-
-screen = MapGenerator.main(track_length=30)
-
 
 if __name__ == "__main__":
     running = True
